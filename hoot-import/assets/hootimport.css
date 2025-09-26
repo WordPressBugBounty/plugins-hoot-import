@@ -1,0 +1,500 @@
+/*** General ***/
+.appearance_page_hoot-import #wpcontent {
+  padding-left: 0;
+}
+
+.hootimp-highlight {
+  font-style: normal;
+  color: #2271b1;
+}
+
+.hootimp-highlightbg {
+  background: #eee;
+  padding: 5px 10px;
+}
+
+/*** Layout ***/
+.hootimp-header {
+  text-align: center;
+  padding: 25px 0 30px;
+  background-color: #fff;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+.hootimp-header h3, .hootimp-header h4 {
+  margin: 0;
+  padding: 0;
+}
+.hootimp-header h3 {
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.hootimp-body {
+  margin: 20px 20px 0;
+}
+
+.hootimp-content {
+  width: 100%;
+  max-width: 1200px;
+  overflow: hidden;
+  padding: 30px 30px 35px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 20px 5px rgba(0, 0, 0, 0.1);
+  color: #3c434a;
+  font-size: 13px;
+  line-height: 1.4em;
+}
+
+.hootimp-footer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/*** Demo Install ***/
+.hootimp-content-install {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.hootimp-screenshots {
+  float: left;
+  width: 58%;
+}
+
+.hootimp-screenshot {
+  margin-right: 30px;
+  min-height: 400px;
+  height: 100%;
+  border: 1px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.hootimp-screenshot img {
+  width: 100%;
+  position: absolute;
+}
+
+.hootimp-theme-info {
+  width: 42%;
+  float: left;
+  box-sizing: border-box;
+  padding: 0 10px;
+}
+.hootimp-theme-info h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 100;
+  line-height: 1.3;
+}
+.hootimp-theme-info h2 span {
+  color: #3c434a;
+  font-size: 13px;
+  font-weight: 400;
+  margin-left: 5px;
+  display: inline-block;
+}
+
+@media only screen and (max-width: 650px) {
+  .hootimp-body {
+    margin: 12px 12px 0;
+  }
+  .hootimp-content {
+    padding: 5px 15px;
+  }
+  .hootimp-screenshots, .hootimp-theme-info {
+    width: 100%;
+    margin: 10px 0;
+    float: none;
+  }
+  .hootimp-screenshot {
+    margin-right: 0;
+  }
+}
+/*** Form ***/
+.hootimp-form h4 {
+  font-size: 1.2em;
+  margin: 0 0 10px;
+}
+.hootimp-form .hootimp-h4desc {
+  position: relative;
+  top: -8px;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.hootimp-op-group {
+  background: #fafafa;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  margin: 25px -10px 0;
+  padding: 20px;
+}
+.hootimp-op-group > div:last-child {
+  margin-bottom: 0;
+}
+.hootimp-op-group h5 {
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 13px;
+  line-height: 20px;
+  color: #888;
+  margin: 0 0 12px;
+  position: relative;
+}
+.hootimp-op-group h5 span {
+  background: #fafafa;
+  padding: 0 5px;
+  position: relative;
+}
+.hootimp-op-group h5:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ccc;
+}
+.hootimp-op-group .hootimp-opbox {
+  max-width: none;
+}
+
+.hootimp-opbox {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 12px;
+}
+
+.hootimp-oplabel {
+  flex-grow: 1;
+}
+.hootimp-oplabel em {
+  margin: 0 2px;
+}
+
+.hootimp--nowc .hootimp-opbox--wcxml {
+  display: none;
+}
+
+.hootimp-op {
+  flex-shrink: 0;
+  position: relative;
+  width: 30px;
+  height: 18px;
+  margin: 2px 12px 0 4px;
+}
+.hootimp-op input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.hootimp-opbox--plugin {
+  min-height: 30px;
+  margin-bottom: 18px;
+}
+.hootimp-opbox--plugin .hootimp-opaction > div {
+  display: none;
+}
+
+.hootimp-opbox--plugin_unavailable div.hootimp-opaction_unavailable {
+  display: block;
+}
+
+.hootimp-opbox--plugin_active div.hootimp-opaction_active {
+  display: block;
+}
+
+.hootimp-opbox--plugin_installed div.hootimp-opaction_installed {
+  display: block;
+}
+
+.hootimp-opbox--plugin_error div.hootimp-opaction_error {
+  display: block;
+  width: 125px;
+  margin: 0;
+  padding: 2px 2px 2px 5px;
+  box-sizing: border-box;
+}
+
+.hootimp-opaction {
+  flex-shrink: 0;
+}
+.hootimp-opaction .button {
+  min-width: 120px;
+  text-align: center;
+}
+.hootimp-opaction .button.disabled {
+  color: #666 !important;
+}
+.hootimp-opaction .button.updating-message:before {
+  color: #a7a7a7;
+}
+
+.hootimp-opaction_active {
+  color: #00a32a;
+}
+.hootimp-opaction_active .dashicons {
+  font-size: 18px;
+  line-height: 1.4em;
+  width: 18px;
+  height: 18px;
+  vertical-align: text-bottom;
+}
+
+.hootimp-action {
+  margin-top: 20px;
+  height: 46px;
+}
+
+.hootimp-submit.button.button-hero {
+  font-size: 14px;
+  height: 46px;
+  line-height: 3.14285714;
+  padding: 0 36px;
+}
+
+.hootimp-toggle {
+  background-color: #ccc;
+  border-radius: 18px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.hootimp-toggle:before {
+  content: "";
+  border-radius: 50%;
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  height: 14px;
+  width: 13px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .hootimp-toggle {
+  background-color: #007cba;
+}
+
+input:checked + .hootimp-toggle:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/*** Load Processing ***/
+.hootimp-loader,
+.hootimp-complete {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+}
+
+.hootimp-loaderror {
+  display: none;
+  margin: 1em 0 0;
+}
+
+.hootimp-form {
+  position: relative;
+}
+.hootimp-form.hootimp-formloader .hootimp-loader {
+  display: block;
+}
+.hootimp-form.hootimp-formloader .hootimp-noloader {
+  opacity: 0;
+}
+.hootimp-form.hootimp-formcomplete .hootimp-complete {
+  display: block;
+}
+.hootimp-form.hootimp-formcomplete .hootimp-noloader {
+  opacity: 0;
+}
+.hootimp-form.hootimp-formloaderror .hootimp-loaderror {
+  display: block;
+}
+
+.hootimp-loaderbar {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.hootimp-loaderbar div {
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(45deg, #2271b1 25%, #80bedd 25%, #80bedd 50%, #2271b1 50%, #2271b1 75%, #80bedd 75%, #80bedd);
+  background-size: 10px 10px;
+  border-radius: 2px 0 0 2px;
+  transition: width 0.3s ease;
+  animation: hootmove 2s linear infinite;
+}
+@keyframes hootmove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 30px 0;
+  }
+}
+
+#hootimp-loadermsg {
+  font-size: 14px;
+  line-height: 1.5em;
+}
+#hootimp-loadermsg span {
+  font-weight: 600;
+}
+#hootimp-loadermsg em {
+  font-style: normal;
+}
+#hootimp-loadermsg strong {
+  color: #b1224f;
+  display: block;
+}
+#hootimp-loadermsg strong + strong {
+  color: #2271b1;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background: #c9ecfd;
+}
+#hootimp-loadermsg .dashicons-update {
+  display: inline-block;
+  margin-right: 4px;
+  animation: hootspin 2s linear infinite;
+}
+@keyframes hootspin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hootimp-complete > div {
+  display: flex;
+  align-items: center;
+}
+.hootimp-complete ol {
+  margin-left: 1em;
+}
+.hootimp-complete li {
+  margin-bottom: 8px;
+}
+
+.hootimp-complete-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 25px;
+  width: 25px;
+  box-sizing: border-box;
+  margin-right: 8px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  border-top-color: #2ed573;
+  animation: hootrot 1s forwards linear;
+}
+@keyframes hootrot {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(1800deg);
+    border: 2px solid #2ed573;
+  }
+}
+.hootimp-complete-icon:before {
+  content: "\f147";
+  font-family: "dashicons";
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 20px;
+  width: 25px;
+  color: #2ed573;
+  opacity: 0;
+  transform: rotate(180deg);
+  animation: hootspinfadein 1s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation-delay: 1s;
+}
+@keyframes hootspinfadein {
+  0% {
+    transform: rotate(180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+.hootimp-form > .hootimp-load-details {
+  display: none;
+}
+
+/*** jconfirm ***/
+.jconfirm.jconfirm-white .jconfirm-bg,
+.jconfirm.jconfirm-light .jconfirm-bg {
+  opacity: 0.6;
+}
+
+.jconfirm-content {
+  font-size: 15px;
+  line-height: 1.5em;
+  padding: 10px 10px 0;
+}
+.jconfirm-content h2 {
+  margin-top: 0;
+}
+.jconfirm-content ol {
+  margin-bottom: 0;
+}
+.jconfirm-content p {
+  font-size: inherit;
+  line-height: inherit;
+}
+.jconfirm-content pre {
+  white-space: break-spaces;
+}
+
+.jconfirm .jconfirm-box {
+  max-width: 600px;
+}
+
+.jconfirm .jconfirm-box .jconfirm-buttons {
+  padding: 0 10px 20px;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons button {
+  padding: 6px 16px;
+  margin-left: 8px;
+  border: solid 1px #2271b1;
+}
+
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button,
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button {
+  text-transform: none;
+  font-weight: normal;
+}
