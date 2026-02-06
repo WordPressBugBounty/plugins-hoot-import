@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hoot Import\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-15 01:46+0530\n"
+"POT-Creation-Date: 2025-11-23 20:04+0530\n"
 "PO-Revision-Date: 2021-12-04 00:48+0530\n"
 "Last-Translator: wpHoot <admin@wphoot.com>\n"
 "Language-Team: wpHoot <admin@wphoot.com>\n"
@@ -16,362 +16,382 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../include/class-admin.php:86 ../include/class-admin.php:100
-#: ../include/class-admin.php:335 ../include/class-admin.php:409
+#: ../include/class-admin.php:85 ../include/class-admin.php:99
+#: ../include/class-admin.php:339 ../include/class-admin.php:455
 msgid "Import Demo"
 msgstr ""
 
-#: ../include/class-admin.php:97
+#: ../include/class-admin.php:96
 msgid "Import Theme Demo"
 msgstr ""
 
-#: ../include/class-admin.php:165
+#: ../include/class-admin.php:164
 msgid "Processing..."
 msgstr ""
 
-#: ../include/class-admin.php:166
+#: ../include/class-admin.php:165
 msgid "Please wait. Another process in being performed."
 msgstr ""
 
-#: ../include/class-admin.php:167
+#: ../include/class-admin.php:166
 msgid "Please Note:"
 msgstr ""
 
-#: ../include/class-admin.php:168
+#: ../include/class-admin.php:167
 msgid "Before you import the demo content, please note the following points:"
 msgstr ""
 
-#: ../include/class-admin.php:170
+#: ../include/class-admin.php:169
 msgid "The import process will automatically fetch the required files and images from wpHoot servers."
 msgstr ""
 
-#: ../include/class-admin.php:171
+#: ../include/class-admin.php:170
 msgid "It is highly recommended to import demo on a fresh WordPress installation to replicate it exactly like the theme demo."
 msgstr ""
 
-#: ../include/class-admin.php:172
+#: ../include/class-admin.php:171
 msgid "None of the existing posts, pages, attachments, menus and other data on your site will be deleted during the import."
 msgstr ""
 
-#: ../include/class-admin.php:173
+#: ../include/class-admin.php:172
 msgid "Please click the Import button and wait. This process can take a few minutes depending upon your server."
 msgstr ""
 
-#: ../include/class-admin.php:175
+#: ../include/class-admin.php:174
 msgid "Start Import"
 msgstr ""
 
-#: ../include/class-admin.php:176
+#: ../include/class-admin.php:175
 msgid "Cancel"
 msgstr ""
 
-#: ../include/class-admin.php:177
+#: ../include/class-admin.php:176
 msgid "Step"
 msgstr ""
 
-#: ../include/class-admin.php:178
+#: ../include/class-admin.php:177
 msgid "Installing"
 msgstr ""
 
-#: ../include/class-admin.php:179
+#: ../include/class-admin.php:178
 msgid "Fetching required files"
 msgstr ""
 
-#: ../include/class-admin.php:180
+#: ../include/class-admin.php:179
 msgid "Importing"
 msgstr ""
 
-#: ../include/class-admin.php:181
+#: ../include/class-admin.php:180
 msgid "Please Wait. This step may take a few minutes."
 msgstr ""
 
-#: ../include/class-admin.php:182
+#: ../include/class-admin.php:181
 msgid "Still working... Please wait..."
 msgstr ""
 
-#: ../include/class-admin.php:183
+#: ../include/class-admin.php:182
 msgid "Finalizing Settings..."
 msgstr ""
 
-#: ../include/class-admin.php:203
+#: ../include/class-admin.php:202
 #, php-format
 msgid "If you like Hoot Import plugin, please consider rating us a %1$s %3$s on WordPress.org%2$s to help us spread the word."
 msgstr ""
 
-#: ../include/class-admin.php:203
+#: ../include/class-admin.php:202
 msgid "Thanks :)"
 msgstr ""
 
-#: ../include/class-admin.php:288 ../include/class-admin.php:296
+#: ../include/class-admin.php:292 ../include/class-admin.php:300
 msgid "Hoot Import"
 msgstr ""
 
-#: ../include/class-admin.php:291
+#: ../include/class-admin.php:295
 #, php-format
 msgid "Plugin Version: %1$s"
 msgstr ""
 
-#: ../include/class-admin.php:308
+#: ../include/class-admin.php:315
 msgid "The current theme version is not supported by Hoot Import plugin."
 msgstr ""
 
-#: ../include/class-admin.php:309
+#: ../include/class-admin.php:316
 msgid "Please update the theme and Hoot Import plugin to their latest versions."
 msgstr ""
 
-#: ../include/class-admin.php:311
+#: ../include/class-admin.php:318
 msgid "The current theme is not supported by Hoot Import plugin."
 msgstr ""
 
-#: ../include/class-admin.php:313
+#: ../include/class-admin.php:320
 #, php-format
 msgid "Please make sure you are using an official %1$swpHoot Theme%2$s"
 msgstr ""
 
-#: ../include/class-admin.php:319
-msgid "The theme demos manifest is not fomratted properly."
+#: ../include/class-admin.php:326
+msgid "The theme demos manifest is not formatted properly."
 msgstr ""
 
-#: ../include/class-admin.php:321
+#: ../include/class-admin.php:328
 msgid "An unknown error occurred."
 msgstr ""
 
-#: ../include/class-admin.php:352
+#: ../include/class-admin.php:356
 msgid "Importing demo data makes your website look similar to the theme demo. Users often find it easier to start with the demo content and then edit it to fit their needs rather than starting from scratch."
 msgstr ""
 
-#: ../include/class-admin.php:365
+#: ../include/class-admin.php:398
 msgid "Plugins:"
 msgstr ""
 
-#: ../include/class-admin.php:366
-msgid "These plugins help to make your site look like the demo site."
+#: ../include/class-admin.php:399
+msgid "These plugins have been used on the demo site and are required to replicate the demo content."
 msgstr ""
 
-#: ../include/class-admin.php:368
+#: ../include/class-admin.php:401
+msgid "Active Plugins:"
+msgstr ""
+
+#: ../include/class-admin.php:407
+msgid "Required Plugins:"
+msgstr ""
+
+#: ../include/class-admin.php:413
 msgid "Highly Recommended"
 msgstr ""
 
-#: ../include/class-admin.php:374
+#: ../include/class-admin.php:419
 msgid "Optional"
 msgstr ""
 
-#: ../include/class-admin.php:383
+#: ../include/class-admin.php:428
 msgid "Import Content:"
 msgstr ""
 
-#: ../include/class-admin.php:386
+#: ../include/class-admin.php:431
 msgid "Content XML"
 msgstr ""
 
-#: ../include/class-admin.php:387
+#: ../include/class-admin.php:432
 msgid "posts, pages, categories, menus, images etc."
 msgstr ""
 
-#: ../include/class-admin.php:390
+#: ../include/class-admin.php:435
 msgid "WooCommerce XML"
 msgstr ""
 
-#: ../include/class-admin.php:391
+#: ../include/class-admin.php:436
 msgid "products, categories, shop pages etc."
 msgstr ""
 
-#: ../include/class-admin.php:395
+#: ../include/class-admin.php:440
 msgid "Customizer DAT"
 msgstr ""
 
-#: ../include/class-admin.php:398
+#: ../include/class-admin.php:441
+msgid "Customizer Settings"
+msgstr ""
+
+#: ../include/class-admin.php:444
 msgid "Widgets WIE"
 msgstr ""
 
-#: ../include/class-admin.php:416
+#: ../include/class-admin.php:462
 msgid "Importing Demo..."
 msgstr ""
 
-#: ../include/class-admin.php:421
+#: ../include/class-admin.php:467
 msgid "All Done."
 msgstr ""
 
-#: ../include/class-admin.php:426
+#: ../include/class-admin.php:472
 #, php-format
 msgid "To edit Settings - %1$sVisit Customizer%2$s"
 msgstr ""
 
-#: ../include/class-admin.php:430
+#: ../include/class-admin.php:476
 #, php-format
 msgid "To edit Widgets - %1$sVisit Widgets screen%2$s"
 msgstr ""
 
-#: ../include/class-admin.php:434
+#: ../include/class-admin.php:480
 #, php-format
 msgid "To see the installed demo content - %1$sView Site%2$s"
 msgstr ""
 
-#: ../include/class-admin.php:437 ../include/class-admin.php:444
+#: ../include/class-admin.php:483 ../include/class-admin.php:490
 msgid "View Log"
 msgstr ""
 
-#: ../include/class-admin.php:440
+#: ../include/class-admin.php:486
 msgid "Import process finished with errors. Please try again later."
 msgstr ""
 
-#: ../include/class-admin.php:460
+#: ../include/class-admin.php:504
 msgid "Refetch Demo Data Files"
 msgstr ""
 
-#: ../include/class-admin.php:522
-msgid "View details on wordpress.org"
+#: ../include/class-admin.php:582
+msgid "Active"
 msgstr ""
 
-#: ../include/class-admin.php:526
-msgid "There was an error."
-msgstr ""
-
-#: ../include/class-admin.php:535
+#: ../include/class-admin.php:585
 msgid "Activate"
 msgstr ""
 
-#: ../include/class-admin.php:538
-msgid "Installed & Active"
+#: ../include/class-admin.php:586 ../include/class-admin.php:590
+msgid "(Required)"
 msgstr ""
 
-#: ../include/class-admin.php:547
-msgid "Install & Activate"
+#: ../include/class-admin.php:589
+msgid "Install"
 msgstr ""
 
-#: ../include/class-admin.php:563
+#: ../include/class-admin.php:608
 msgid "HootKit"
 msgstr ""
 
-#: ../include/class-admin.php:568
+#: ../include/class-admin.php:613
 msgid "Contact Form 7"
 msgstr ""
 
-#: ../include/class-admin.php:572
+#: ../include/class-admin.php:617
 msgid "Breadcrumb NavXT"
 msgstr ""
 
-#: ../include/class-admin.php:576
+#: ../include/class-admin.php:621
 msgid "Woocommerce - eCommerce Shop"
 msgstr ""
 
-#: ../include/class-admin.php:581
+#: ../include/class-admin.php:626
 msgid "Newsletter"
 msgstr ""
 
-#: ../include/class-admin.php:586
+#: ../include/class-admin.php:631
 msgid "MapPress - Google Maps"
 msgstr ""
 
-#: ../include/class-importer.php:115
+#: ../include/class-importer.php:127
+msgid "Files already fetched"
+msgstr ""
+
+#: ../include/class-importer.php:130
 msgid "Configuration error while fetching files"
 msgstr ""
 
 #: ../include/class-importer.php:146
+msgid "Fetched files"
+msgstr ""
+
+#: ../include/class-importer.php:161
 msgid "Configuration error while getting package"
 msgstr ""
 
-#: ../include/class-importer.php:164
+#: ../include/class-importer.php:178
 msgid "Error encountered while getting package:"
 msgstr ""
 
-#: ../include/class-importer.php:168
+#: ../include/class-importer.php:182
 msgid "File does not exist in downloaded pack."
 msgstr ""
 
-#: ../include/class-importer.php:185
+#: ../include/class-importer.php:199
 msgid "Setup file does not exist."
 msgstr ""
 
-#: ../include/class-importer.php:189
+#: ../include/class-importer.php:203
 msgid "Cannot read setup file."
 msgstr ""
 
-#: ../include/class-importer.php:194
+#: ../include/class-importer.php:208
 msgid "Invalid Setup file format."
 msgstr ""
 
-#: ../include/class-importer.php:200
+#: ../include/class-importer.php:214
 msgid "Unknown error encountered while getting setup file"
 msgstr ""
 
-#: ../include/class-importer.php:219
+#: ../include/class-importer.php:233
 msgid "Plugin already installed and activated"
 msgstr ""
 
-#: ../include/class-importer.php:225
+#: ../include/class-importer.php:239
 msgid "You do not have permission to activate plugins"
 msgstr ""
 
-#: ../include/class-importer.php:232
+#: ../include/class-importer.php:246
 msgid "Error encountered while activating:"
 msgstr ""
 
-#: ../include/class-importer.php:235
+#: ../include/class-importer.php:249
 msgid "Plugin activated"
 msgstr ""
 
-#: ../include/class-importer.php:240
+#: ../include/class-importer.php:254
 msgid "You do not have permission to install plugins"
 msgstr ""
 
-#: ../include/class-importer.php:243
+#: ../include/class-importer.php:257
 msgid "Empty plugin value slug"
 msgstr ""
 
-#: ../include/class-importer.php:270
+#: ../include/class-importer.php:284
 msgid "API error encountered while installing plugin:"
 msgstr ""
 
-#: ../include/class-importer.php:282
+#: ../include/class-importer.php:296
 msgid "Plugin installed but error during activation:"
 msgstr ""
 
-#: ../include/class-importer.php:284
+#: ../include/class-importer.php:298
 msgid "Plugin installed and activated"
 msgstr ""
 
-#: ../include/class-importer.php:286
+#: ../include/class-importer.php:300
 msgid "Plugin installed but permissions error during activation"
 msgstr ""
 
-#: ../include/class-importer.php:288
+#: ../include/class-importer.php:302
 msgid "Plugin installation failed"
 msgstr ""
 
-#: ../include/class-importer.php:303 ../include/class-importer.php:508
+#: ../include/class-importer.php:317 ../include/class-importer.php:538
 msgid "Error config data for content"
 msgstr ""
 
-#: ../include/class-importer.php:365
+#: ../include/class-importer.php:379
 msgid "Unknown error encountered while getting demo file"
 msgstr ""
 
-#: ../include/class-importer.php:425
+#: ../include/class-importer.php:439
 msgid "Error encountered while importing Customizer Settings:"
 msgstr ""
 
-#: ../include/class-importer.php:427
+#: ../include/class-importer.php:441
 msgid "Customizer Settings imported successfully"
 msgstr ""
 
-#: ../include/class-importer.php:429
+#: ../include/class-importer.php:443
 msgid "Unknown error encountered while importing Customizer Settings"
 msgstr ""
 
-#: ../include/class-importer.php:452
+#: ../include/class-importer.php:460
+msgid "HootKit Settings updated"
+msgstr ""
+
+#: ../include/class-importer.php:482
 msgid "Error encountered while importing Widgets:"
 msgstr ""
 
-#: ../include/class-importer.php:475
+#: ../include/class-importer.php:505
 msgid "Unknown error encountered while importing Widgets"
 msgstr ""
 
-#: ../include/class-importer.php:514
+#: ../include/class-importer.php:544
 msgid "Unknown error with Setup JSON"
 msgstr ""
 
-#: ../include/class-importer.php:659
+#: ../include/class-importer.php:697
 msgid "Final setup completed"
 msgstr ""
 
@@ -547,67 +567,67 @@ msgstr ""
 msgid "Menu item skipped due to invalid menu slug: %s"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1017
+#: ../include/importers/class-wxr-importer.php:1018
 msgid "Fetching attachments is not enabled"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1035
+#: ../include/importers/class-wxr-importer.php:1036
 msgid "Invalid file type"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1079
+#: ../include/importers/class-wxr-importer.php:1080
 msgid "Could not create temporary file."
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1101
+#: ../include/importers/class-wxr-importer.php:1102
 #, php-format
 msgid "Request failed due to an error: %1$s (%2$s)"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1117
+#: ../include/importers/class-wxr-importer.php:1118
 #, php-format
 msgid "Remote server returned the following unexpected result: %1$s (%2$s)"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1129
+#: ../include/importers/class-wxr-importer.php:1130
 msgid "Remote server did not respond"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1136
+#: ../include/importers/class-wxr-importer.php:1137
 msgid "Zero size file downloaded"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1141
+#: ../include/importers/class-wxr-importer.php:1142
 msgid "Downloaded file has incorrect size"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1148
+#: ../include/importers/class-wxr-importer.php:1149
 #, php-format
 msgid "Remote file is too large, limit is %s"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1180
+#: ../include/importers/class-wxr-importer.php:1181
 msgid "Sorry, this file type is not permitted for security reasons."
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1195
+#: ../include/importers/class-wxr-importer.php:1196
 msgid "The uploaded file could not be moved"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1318
+#: ../include/importers/class-wxr-importer.php:1319
 msgid "Import WordPress"
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1326
+#: ../include/importers/class-wxr-importer.php:1327
 #, php-format
 msgid "A new version of this importer is available. Please update to version %s to ensure compatibility with newer export files."
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1341
+#: ../include/importers/class-wxr-importer.php:1342
 msgid "Howdy! Upload your WordPress eXtended RSS (WXR) file and we&#8217;ll import the posts, pages, comments, custom fields, categories, and tags into this site."
 msgstr ""
 
-#: ../include/importers/class-wxr-importer.php:1342
+#: ../include/importers/class-wxr-importer.php:1343
 msgid "Choose a WXR (.xml) file to upload, then click Upload file and import."
 msgstr ""
 

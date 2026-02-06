@@ -41,6 +41,13 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 		public $main_menu = 0;
 
 		/**
+		 * Meta Flag
+		 * @since  1.8
+		 * @access private
+		 */
+		private $metaflag = 'wphoot';
+
+		/**
 		 * Setup Importer
 		 * @since  1.0
 		 * @access public
@@ -84,6 +91,14 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 				$response['error'] = esc_html( 'Empty config data', 'hoot-import' );
 			} elseif ( $type == 'prepare' ) {
 				$response = $this->fetch_files();
+				// Do subroutines if any
+				if ( is_array( $response ) && isset( $response['success'] ) ) {
+					if ( !empty( $mod['subroutines'] ) && is_array( $mod['subroutines'] ) ) {
+						if ( in_array( 'wie', $mod['subroutines'] ) ) {
+							$response['subroutine'] = $this->prepare_wie();
+						}
+					}
+				}
 			} elseif ( $type == 'plugin' ) {
 				add_action( 'hootimport_plugin_activated', array( $this, 'plugin_activated' ), 5 );
 				$response = $this->process_plugin( $slug, $const, $class, $function, $file );
@@ -100,19 +115,19 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 
 		/**
 		 * Fetch Files from CDN
-		 * @return bool|string
+		 * @param bool $forcefetch Whether to always fetch files from the CDN
+		 * @return array
 		 */
-		public function fetch_files() {
-			// No need to check for freshness as hootimport_cleanup() is run on page load.
+		public function fetch_files( $forcefetch=false ) {
+			// No need to check for freshness as hootimport_cleanup(dir,false) is run when our plugin begins rendering admin page.
 			$demopack_dir = hootimport()->demopack_dir;
 			$demoslug = $this->demoslug;
 			$pack = $this->pack;
-
-			if ( file_exists( "{$demopack_dir}{$demoslug}-xml.txt" ) ) // cdn/v4b
-				return true;
+			if ( ! $forcefetch && file_exists( "{$demopack_dir}{$demoslug}-json.txt" ) )
+				return array( 'success' => esc_html__( 'Files already fetched', 'hoot-import' ) );
 
 			if ( empty( $pack ) || !is_string( $pack ) )
-				return esc_html__( 'Configuration error while fetching files', 'hoot-import' );
+				return array( 'error' => esc_html__( 'Configuration error while fetching files', 'hoot-import' ) );
 
 			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 			include_once hootimport()->dir . '/include/class-upgrader.php';
@@ -122,13 +137,13 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 
 			if ( is_string( $result ) ) {
 				// Error
-				return $result;
+				return array( 'error' => esc_html( $result ) );
 			} else {
 				// Success - Setup freshness
-				if ( file_exists( "{$demopack_dir}{$demoslug}-xml.txt" ) ) { // cdn/v4b
+				if ( file_exists( "{$demopack_dir}{$demoslug}-json.txt" ) ) {
 					set_transient( 'hootimport_freshpack', 'fresh', WEEK_IN_SECONDS * 4 );
 				}
-				return true;
+				return array( 'success' => esc_html__( 'Fetched files', 'hoot-import' ) );
 			}
 		}
 
@@ -145,7 +160,6 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 			if ( empty( $type ) || empty( $demoslug ) || !is_string( $type ) || !is_string( $demoslug ) ) {
 				return array( 'error' => esc_html__( 'Configuration error while getting package', 'hoot-import' ) );
 			}
-			// cdn/v4b
 			$suffix = $type === 'wcxml' ? '-wc-xml' : '-'.$type;
 			$ext    = 'txt';
 
@@ -159,9 +173,9 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 				return array( 'localfile' => $checkfile, 'fileurl' => $checkfileurl );
 
 			// We should have already fetched the package during 'prepare', but give it one more try in case $checkfile does not exist for some reason.
-			$result = $this->fetch_files();
-			if ( is_string( $result ) ) {
-				$response = array( 'error' => esc_html__( 'Error encountered while getting package:', 'hoot-import' ) . ' ' . $result );
+			$result = $this->fetch_files( true );
+			if ( is_array( $result ) && isset( $result['error'] ) ) {
+				$response = array( 'error' => esc_html__( 'Error encountered while getting package:', 'hoot-import' ) . ' ' . $result['error'] );
 			} elseif ( file_exists( $checkfile ) ) {
 				$response = array( 'localfile' => $checkfile, 'fileurl' => $checkfileurl );
 			} else {
@@ -433,7 +447,23 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 		}
 
 		/**
-		 * Import DAT
+		 * Prepare WIE
+		 * @since  1.8
+		 * @access public
+		 * @return string
+		 */
+		public function prepare_wie() {
+			$setupinfo = $this->get_setup_json();
+			if ( isset( $setupinfo['hootkit-activemods'] ) && is_array( $setupinfo['hootkit-activemods'] ) ) {
+				// Save even if it is an empty array (reset all settings!)
+				update_option( 'hootkit-activemods', $setupinfo['hootkit-activemods'] );
+				return esc_html__( 'HootKit Settings updated', 'hoot-import' );
+			}
+			return '0';
+		}
+
+		/**
+		 * Import WIE
 		 * @since  1.0
 		 * @access public
 		 * @param string $fileurl
@@ -520,6 +550,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 				foreach ( $setupinfo as $key => $orig_id ) {
 					switch ( $key ) {
 						case 'front':
+							$orig_id = is_numeric( $orig_id ) ? intval( $orig_id ) : 0;
+							if ( ! $orig_id ) { break; }
 							$new_id = $this->get_idsmap( 'posts', $orig_id );
 							if ( $new_id ) {
 								update_option( 'show_on_front', 'page' );
@@ -529,6 +561,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 							}
 							break;
 						case 'blog':
+							$orig_id = is_numeric( $orig_id ) ? intval( $orig_id ) : 0;
+							if ( ! $orig_id ) { break; }
 							$new_id = $this->get_idsmap( 'posts', $orig_id );
 							if ( $new_id ) {
 								update_option( 'page_for_posts', $new_id );
@@ -536,9 +570,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 							break;
 						case 'blogposts':
 							$orig_id = is_numeric( $orig_id ) ? intval( $orig_id ) : 0;
-							if ( $orig_id > 0 ) {
-								update_option( 'posts_per_page', $orig_id );
-							}
+							if ( ! $orig_id ) { break; }
+							update_option( 'posts_per_page', $orig_id );
 							break;
 						default:
 							break;
@@ -552,7 +585,9 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 						case 'cart':
 						case 'checkout':
 						case 'account':
-							if( class_exists( 'WooCommerce' ) ) {
+							if ( class_exists( 'WooCommerce' ) ) {
+								$orig_id = is_numeric( $orig_id ) ? intval( $orig_id ) : 0;
+								if ( ! $orig_id ) { break; }
 								$slug = $key === 'account' ? 'myaccount' : $key;
 								$new_id = $this->get_idsmap_wc( 'posts', $orig_id );
 								$page = get_post( $new_id );
@@ -594,8 +629,9 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 
 			/*** Update menu locations ***/
 			if ( $hasxml || $hasdat ) :
-				$main_menu = !empty( $setupinfo['menu'] ) ? $setupinfo['menu'] : false;
-				$main_menu = $main_menu ? $this->get_idsmap( 'terms', $main_menu ) : false;
+				$main_menu = !empty( $setupinfo['menu'] ) ? $setupinfo['menu'] : 0;
+				$main_menu = intval( $main_menu );
+				$main_menu = $main_menu ? $this->get_idsmap( 'terms', $main_menu ) : 0;
 				$main_menu = $main_menu && term_exists( (int) $main_menu, 'nav_menu' ) ? $main_menu : 0;
 				if ( ! $main_menu ) {
 					// Try finding one using a slug
@@ -622,8 +658,10 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 			if ( $hasxml || $hasdat ) :
 				if ( !empty( $setupinfo['404'] ) ) {
 					$orig_id = intval( $setupinfo['404'] );
-					$new_id = intval( $orig_id ) ? $this->get_idsmap( 'posts', $orig_id ) : 0;
-					if ( $new_id ) { set_theme_mod( '404_custom_page', $new_id ); }
+					if ( $orig_id ) {
+						$new_id = intval( $orig_id ) ? $this->get_idsmap( 'posts', $orig_id ) : 0;
+						if ( $new_id ) { set_theme_mod( '404_custom_page', $new_id ); }
+					}
 				}
 			endif;
 
@@ -726,9 +764,7 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 			if ( ! is_array( $meta ) ) {
 				$meta = array();
 			}
-			// add value as slug instead to identify the theme pack it was a part of
-			$value = 'wphoot';
-			$meta[] = array( 'key' => '_hootimport', 'value' => $value );
+			$meta[] = array( 'key' => '_hootimport', 'value' => $this->metaflag );
 			return $meta;
 		}
 
@@ -739,9 +775,7 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 		 * @return void
 		 */
 		public function add_menuitem_identifier_meta( $id, $menu_id, $args ) {
-			// add value as slug instead to identify the theme pack it was a part of
-			$value = 'wphoot';
-			add_post_meta( $id, '_hootimport', $value, true );
+			add_post_meta( $id, '_hootimport', $this->metaflag, true );
 		}
 
 		/**
@@ -845,8 +879,7 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 		public function reset_menu( $terms ) {
 			if ( !is_array( $terms ) )
 				return;
-			$flagvalue = 'wphoot';
-			$processed = array(); // xml can contain duplicate copies of the same menu item
+			$processed = array(); // xml can contain duplicate copies of the same menu
 			foreach ( $terms as $term ) {
 				if (
 					!empty( $term['term_taxonomy'] ) && $term['term_taxonomy'] === 'nav_menu'
@@ -855,22 +888,16 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 				) {
 					$menu = wp_get_nav_menu_object( $term['slug'] );
 					if ( $menu && !empty( $menu->term_id ) ) {
-						// Delete menu items
-						$menu_items = wp_get_nav_menu_items( $menu->term_id );
-						if ( !empty( $menu_items ) && is_array( $menu_items ) ) {
-							foreach ( $menu_items as $menu_item ) {
-								$flag = get_post_meta( $menu_item->ID, '_hootimport', true );
-								if ( $flag === $flagvalue ) {
-									wp_delete_post( $menu_item->ID, true ); // 'true' forces permanent deletion
+						$processed[] = $term['term_id'];
+							$menu_items = wp_get_nav_menu_items( $menu->term_id );
+							if ( !empty( $menu_items ) && is_array( $menu_items ) ) {
+								foreach ( $menu_items as $menu_item ) {
+									$flag = get_post_meta( $menu_item->ID, '_hootkitimport', true );
+									if ( $flag === $this->metaflag ) {
+										wp_delete_post( $menu_item->ID, true ); // 'true' forces permanent deletion
+									}
 								}
 							}
-						}
-						// Delete the menu itself
-						$flag = get_term_meta( $menu->term_id, '_hootimport', true );
-						if ( $flag === $flagvalue ) {
-							$processed[] = $term['term_id'];
-							wp_delete_term( $menu->term_id, 'nav_menu' );
-						}
 					}
 				}
 			}
@@ -916,18 +943,45 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 		 * @return string
 		 */
 		public function menu_item_customurl( $url ) {
+			$rawurl = $url;
 			if ( $url ) {
 				$slug = !empty( $this->demoslug ) ? str_replace( '-premium', '', $this->demoslug ) : false;
 				if ( $slug ) {
+					$home_url = home_url( '/' );
 					// Dont replace "https://wphoot.com/"
 					$replace = apply_filters( 'hootimport_menu_item_customurl_home_replace', array(
 						"https://demo.wphoot.com/{$slug}/",
-						"https://demo.wphoot.com/content/{$slug}/"
+						"https://demo.wphoot.com/content/{$slug}/",
+						"https://demosites.wphoot.com/{$slug}/",
+						"https://demosites.wphoot.com/content/{$slug}/"
 					) );
-					$url = str_replace( $replace, home_url( '/' ), $url );
-					$maybe_replaced = apply_filters( 'hootimport_menu_item_customurl_home_replaced', $url );
+					$url = str_replace( $replace, $home_url, $url );
+					$maybe_replaced = apply_filters( 'hootimport_menu_item_customurl_home_replaced', $url, $slug );
 					if ( $maybe_replaced !== $url ) {
 						$url = esc_url( $maybe_replaced );
+					} else {
+						// Update special cases for author urls and 404 url
+						$check = rtrim( $url, '/' );
+						$author_slugs = array('jasin', 'jasins', 'wphoot', 'admin', 'contact');
+						foreach ( $author_slugs as $authslug ) {
+							if ( $check === $home_url . 'author/' . $authslug ) {
+								if ( function_exists( 'get_current_user_id' ) && function_exists( 'get_author_posts_url' ) ) {
+									$authorid = get_current_user_id();
+									if ( $authorid ) {
+										$authorurl = get_author_posts_url( $authorid );
+										$url = $authorurl ? $authorurl : $url;
+									}
+								}
+								break;
+							}
+						}
+						$error_slugs  = array('i-dont-exist', '404', '404-page', 'custom-404-page', 'notfound', 'not-found');
+						foreach ( $error_slugs as $errslug ) {
+							if ( $check === $home_url . $errslug ) {
+								$url = strpos( $rawurl, 'demosites.wphoot.com' ) !== false ? "https://demosites.wphoot.com/{$slug}/{$errslug}" : "https://demo.wphoot.com/{$slug}/{$errslug}";
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -996,7 +1050,7 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 				/* Slider CPT */
 				elseif ( strpos( $text, '[hoot_slider' ) !== false ) {
 					preg_match_all('/\[hoot_slider id="(\d+)"\]/', $text, $matches);
-					$orig_ids = $matches[1]; // Contains all IDs found
+					$orig_ids = !empty( $matches[1] ) && is_array( $matches[1] ) ? $matches[1] : array(); // Contains all IDs found
 					foreach ( $orig_ids as $orig_id ) {
 						$new_id = intval( $orig_id ) ? $this->get_idsmap( 'posts', $orig_id ) : 0;
 						if ( $new_id ) {
@@ -1132,6 +1186,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 							$new_id = !empty( $orig_id ) ? $this->get_idsmap( 'terms', $orig_id ) : 0;
 							if ( $new_id ) {
 								$widget[ $term ][ $key ] = $new_id;
+							} else {
+								unset( $widget[ $term ][ $key ] );
 							}
 						}
 					} elseif ( !empty( $widget[ $term ] ) ) {
@@ -1139,6 +1195,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 						$new_id = !empty( $orig_id ) ? $this->get_idsmap( 'terms', $orig_id ) : 0;
 						if ( $new_id ) {
 							$widget[ $term ] = $new_id;
+						} else {
+							$widget[ $term ] = '';
 						}
 					}
 				}
@@ -1158,6 +1216,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 							$new_id = !empty( $orig_id ) ? $this->get_idsmap_wc( 'terms', $orig_id ) : 0;
 							if ( $new_id ) {
 								$widget[ $term ][ $key ] = $new_id;
+							} else {
+								unset( $widget[ $term ][ $key ] );
 							}
 						}
 					} elseif ( !empty( $widget[ $term ] ) ) {
@@ -1165,6 +1225,8 @@ if ( ! class_exists( '\HootImport\Inc\Importer' ) ) :
 						$new_id = !empty( $orig_id ) ? $this->get_idsmap_wc( 'terms', $orig_id ) : 0;
 						if ( $new_id ) {
 							$widget[ $term ] = $new_id;
+						} else {
+							$widget[ $term ] = '';
 						}
 					}
 				}

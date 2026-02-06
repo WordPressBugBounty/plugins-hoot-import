@@ -9,7 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return apply_filters( 'hootimport_demopacks_manifest', array(
-	'cdn_url' => 'https://cdn.wphoot.com/themedemos/v4b/',
+	'cdn_base' => 'https://cdn.wphoot.com/',
+	'cdn_url' => 'https://cdn.wphoot.com/themedemos/v5/',
 	'chromatic' => array(
 		'plugins' => array(
 			'woocommerce',
@@ -235,24 +236,6 @@ return apply_filters( 'hootimport_demopacks_manifest', array(
 			'contact-form-7',
 			'breadcrumb-navxt',
 			'woocommerce',
-		)
-	),
-	'magazine-lume' => array(
-		'plugins' => array(
-			'hootkit',
-			'contact-form-7',
-			'breadcrumb-navxt',
-			'woocommerce',
-			'newsletter',
-		)
-	),
-	'magazine-booster' => array(
-		'plugins' => array(
-			'hootkit',
-			'contact-form-7',
-			'breadcrumb-navxt',
-			'woocommerce',
-			'newsletter',
 		)
 	),
 ) );

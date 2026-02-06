@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Hoot Import
  * Description:       Hoot Import lets you import demo content for WordPress themes by wpHoot.
- * Version:           1.7.1
+ * Version:           1.8
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            wphoot
@@ -58,7 +58,7 @@ if ( ! class_exists( 'HootImport' ) ) :
 		public function __construct() {
 
 			// Plugin Info
-			$this->version         = '1.7.1';
+			$this->version         = '1.8';
 			$this->name            = 'Hoot Import';
 			$this->slug            = 'hoot-import';
 			$this->file            = __FILE__;

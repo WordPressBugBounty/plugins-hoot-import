@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Customizer Demo Importer Option class.
+ * @method string update(string $value)
  * @see WP_Customize_Setting
  */
 final class HootImport_Customize_Option extends WP_Customize_Setting {

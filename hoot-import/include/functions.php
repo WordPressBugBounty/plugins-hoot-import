@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param string $title The title of the post/page to retrieve.
  * @return WP_Post|null The retrieved post/page object or null if not found.
  */
+if ( !function_exists( 'hootimport_get_post_type_by_title' ) ):
 function hootimport_get_post_type_by_title( $title, $type='post' ) {
 	if ( ! $title || !is_string( $title ) ) {
 		return null;
@@ -35,6 +36,7 @@ function hootimport_get_post_type_by_title( $title, $type='post' ) {
 	}
 	return current( $query->posts );
 }
+endif;
 
 /**
  * Recursive wp_parse_args
@@ -42,6 +44,7 @@ function hootimport_get_post_type_by_title( $title, $type='post' ) {
  * @since  1.0
  * @return mixed
  */
+if ( !function_exists( 'hootimport_recursive_parse_args' ) ):
 function hootimport_recursive_parse_args( $args, $defaults ) {
 	$return = (array) $defaults;
 	foreach ( $args as $key => $value ) {
@@ -53,6 +56,30 @@ function hootimport_recursive_parse_args( $args, $defaults ) {
 	}
 	return $return;
 }
+endif;
+
+/**
+ * sanitize_html_class works just fine for a single class
+ * This is an extension to sanitize_html_class for sanitizing more than one class (with spaces or in an array)
+ *
+ * @param mixed string/array
+ * @param mixed $fallback
+ * @return mixed string / $fallback
+ */
+if ( !function_exists( 'hootimport_sanitize_html_classes' ) ):
+function hootimport_sanitize_html_classes( $class, $fallback = null ) {
+	if ( is_string( $class ) ) {
+		$class = explode( " ", $class );
+	} 
+	if ( is_array( $class ) && count( $class ) > 0 ) {
+		$class = array_map( "sanitize_html_class", $class );
+		return implode( " ", $class );
+	}
+	else { 
+		return sanitize_html_class( $class, $fallback );
+	}
+}
+endif;
 
 /**
  * Cleanup
@@ -61,6 +88,7 @@ function hootimport_recursive_parse_args( $args, $defaults ) {
  * @param  bool   $forcecleanup
  * @return void
  */
+if ( !function_exists( 'hootimport_cleanup' ) ):
 function hootimport_cleanup( $demopack_dir = '', $forcecleanup = false ) {
 	if (
 		empty( $demopack_dir ) || !is_string( $demopack_dir )
@@ -90,3 +118,4 @@ function hootimport_cleanup( $demopack_dir = '', $forcecleanup = false ) {
 	}
 
 }
+endif;

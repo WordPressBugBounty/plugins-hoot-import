@@ -9,71 +9,32 @@ jQuery(document).ready(function($) {
 	window.onbeforeunload = function(e) {
 		if ( hootImportDirtyVals ) {
 			e.preventDefault();
-			e.returnValue = 'Your values are not saved';
+			e.returnValue = 'The content is being imported. Please wait for the process to finish.';
 		}
 	};
 
 	/*** Modules Toggle ***/
-
-	$('.hootimp-opbox .hootimp-toggle').click( function(e){
-		$(this).siblings('input[type=checkbox]').click();
-	});
-
-	/*** Plugins ***/
-	$('.hootimp-opbox--plugin').each( function() {
-		var $opbox = $(this);
-		$opbox.find('.button').on( 'click', function(e) {
+	$('.hootimp-opbox').not('.hootimp-opbox--plugin_active, .hootimp-opbox--plugin_reqd').each( function() {
+		var $this = $(this),
+			$toggle = $this.find('.hootimp-toggle'),
+			$checkbox = $this.find('input[type=checkbox]');
+		$toggle.on( 'click', function(e) {
 			e.preventDefault();
-
-			var $button = $(this),
-				activeText = hootimportData.strings.processing_plugin;
-
-			if ( $button.is('.disabled') )
-				return;
-			if ( activeProcess ) {
-				alert( hootimportData.strings.active_process_alert );
-				return;
-			}
-
-			// Setup
-			$button.addClass('disabled updating-message').text( activeText );
-			hootImportDirtyVals = true;
-			activeProcess = true;
-
-			var mod = $.extend( {
-				demoslug: $('#hootimp-form').find('input[name="demo"]').val(),
-			}, $(this).data() );
-
-			$.ajax( {
-				url: ajaxurl,
-				type : 'post',
-				data: {
-					'action': hootimportData.import_action,
-					'nonce': hootimportData.nonce,
-					'mod': JSON.stringify( mod )
-				},
-				success: function( response ){
-					if ( response.error ) {
-						console.log( 'AJAX response Error ' + mod.name, response );
-						$opbox.removeClass('hootimp-opbox--plugin_unavailable hootimp-opbox--plugin_installed').addClass('hootimp-opbox--plugin_error');
-					} else {
-						$opbox.removeClass('hootimp-opbox--plugin_unavailable hootimp-opbox--plugin_installed').addClass('hootimp-opbox--plugin_active');
-						if ( mod.value === 'woocommerce' ) {
-							$('#hootimp-form').removeClass('hootimp--nowc');
-							$('input[value="wcxml"]').prop("checked", true);
-						}
-					}
-				},
-				error: function( xhr, textStatus, errorThrown ) {
-					$opbox.removeClass('hootimp-opbox--plugin_unavailable hootimp-opbox--plugin_installed').addClass('hootimp-opbox--plugin_error');
-				},
-				complete: function( data ){
-					// Reverse Setup
-					hootImportDirtyVals = false;
-					activeProcess = false;
+			if ( $checkbox.is(':checked') ) {
+				$checkbox.prop('checked', false);
+				$this.addClass('hootimp-opbox--plugin_noaction');
+				if ( $checkbox.val() === 'woocommerce' ) {
+					$('#hootimp-form').addClass('hootimp--nowc');
+					$('input[value="wcxml"]').prop("checked", false);
 				}
-			} );
-
+			} else {
+				$checkbox.prop('checked', true);
+				$this.removeClass('hootimp-opbox--plugin_noaction');
+				if ( $checkbox.val() === 'woocommerce' ) {
+					$('#hootimp-form').removeClass('hootimp--nowc');
+					$('input[value="wcxml"]').prop("checked", true);
+				}
+			}
 		} );
 	} );
 
@@ -87,7 +48,7 @@ jQuery(document).ready(function($) {
 
 		if ( $submit.is('.disabled') )
 			return;
-		if ( activeProcess ) {
+		if ( activeProcess ) { // This should not happen as no access point to Submit button once started
 			alert( hootimportData.strings.active_process_alert );
 			return;
 		}
@@ -109,7 +70,8 @@ jQuery(document).ready(function($) {
 				name: 'Fetching Files',
 				type: 'prepare',
 				demoslug: demoslug,
-				pack: pack
+				pack: pack,
+				subroutines: [],
 			} ];
 			// Order of selected actions is important
 			$form.find('input[name="plugin[]"]:checked').each( function() {
@@ -119,6 +81,7 @@ jQuery(document).ready(function($) {
 					demoslug: demoslug
 				}, $(this).data() );
 				selected.push( plugin );
+				selected[0]['subroutines'].push( plugin.value );
 			} );
 			contentTypes.forEach( function( contentType ) {
 				$form.find('input[value="' + contentType + '"]:checked').each( function() {
@@ -129,6 +92,7 @@ jQuery(document).ready(function($) {
 						pack: pack
 					}, $(this).data() );
 					selected.push( content );
+					selected[0]['subroutines'].push( content.value );
 				} );
 			} );
 			selected.push( {
@@ -266,8 +230,8 @@ jQuery(document).ready(function($) {
 			backgroundDismiss: true,
 			animation: 'scale',
 			closeAnimation: 'scale',
-			onContentReady: function () { $( 'body' ).addClass( 'hootimport-message-popup' ); },
-			onDestroy: function () { $( 'body' ).removeClass( 'hootimport-message-popup' ); },
+			onContentReady: function () { $( 'body' ).addClass( 'hootimp-message-popup' ); },
+			onDestroy: function () { $( 'body' ).removeClass( 'hootimp-message-popup' ); },
 			buttons: {
 				confirm: {
 					text: hootimportData.strings.confirm_primarybtn,
@@ -297,8 +261,8 @@ jQuery(document).ready(function($) {
 			backgroundDismiss: true,
 			animation: 'scale',
 			closeAnimation: 'scale',
-			onContentReady: function () { $( 'body' ).addClass( 'hootimport-log-popup' ); },
-			onDestroy: function () { $( 'body' ).removeClass( 'hootimport-log-popup' ); },
+			onContentReady: function () { $( 'body' ).addClass( 'hootimp-log-popup' ); },
+			onDestroy: function () { $( 'body' ).removeClass( 'hootimp-log-popup' ); },
 			buttons: {
 				cancel: {
 					text: 'Close',

@@ -62,16 +62,17 @@
 }
 
 .hootimp-screenshots {
-  float: left;
   width: 58%;
+  padding: 1px 0 3px;
 }
 
 .hootimp-screenshot {
   margin-right: 30px;
-  min-height: 400px;
+  min-height: 500px;
   height: 100%;
   border: 1px solid #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  background: #fafafa;
   position: relative;
   overflow: hidden;
 }
@@ -82,7 +83,6 @@
 
 .hootimp-theme-info {
   width: 42%;
-  float: left;
   box-sizing: border-box;
   padding: 0 10px;
 }
@@ -100,7 +100,7 @@
   display: inline-block;
 }
 
-@media only screen and (max-width: 650px) {
+@media only screen and (max-width: 960px) {
   .hootimp-body {
     margin: 12px 12px 0;
   }
@@ -113,7 +113,10 @@
     float: none;
   }
   .hootimp-screenshot {
-    margin-right: 0;
+    min-height: 400px;
+    max-width: 600px;
+    margin-right: auto;
+    margin-left: auto;
   }
 }
 /*** Form ***/
@@ -123,7 +126,7 @@
 }
 .hootimp-form .hootimp-h4desc {
   position: relative;
-  top: -8px;
+  top: -5px;
   margin-bottom: 4px;
   font-style: italic;
 }
@@ -161,6 +164,9 @@
   height: 1px;
   background: #ccc;
 }
+.hootimp-op-group .hootimp-opbox + h5 {
+  margin-top: 22px;
+}
 .hootimp-op-group .hootimp-opbox {
   max-width: none;
 }
@@ -174,6 +180,19 @@
   margin-bottom: 12px;
 }
 
+.hootimp-optoggle {
+  flex-shrink: 0;
+  position: relative;
+  width: 30px;
+  height: 18px;
+  margin: 2px 12px 0 4px;
+}
+.hootimp-optoggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
 .hootimp-oplabel {
   flex-grow: 1;
 }
@@ -185,70 +204,53 @@
   display: none;
 }
 
-.hootimp-op {
-  flex-shrink: 0;
-  position: relative;
-  width: 30px;
-  height: 18px;
-  margin: 2px 12px 0 4px;
-}
-.hootimp-op input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.hootimp-opbox--plugin_unavailable .hootimp-opnote--unavailable {
+  display: block;
 }
 
-.hootimp-opbox--plugin {
-  min-height: 30px;
-  margin-bottom: 18px;
+.hootimp-opbox--plugin_active .hootimp-opnote--active {
+  display: block;
 }
-.hootimp-opbox--plugin .hootimp-opaction > div {
+
+.hootimp-opbox--plugin_installed .hootimp-opnote--installed {
+  display: block;
+}
+
+.hootimp-opbox--plugin_noaction [class^=hootimp-opnote--] {
   display: none;
 }
 
-.hootimp-opbox--plugin_unavailable div.hootimp-opaction_unavailable {
-  display: block;
-}
-
-.hootimp-opbox--plugin_active div.hootimp-opaction_active {
-  display: block;
-}
-
-.hootimp-opbox--plugin_installed div.hootimp-opaction_installed {
-  display: block;
-}
-
-.hootimp-opbox--plugin_error div.hootimp-opaction_error {
-  display: block;
-  width: 125px;
-  margin: 0;
-  padding: 2px 2px 2px 5px;
-  box-sizing: border-box;
-}
-
-.hootimp-opaction {
+.hootimp-opnote {
+  min-width: 64px;
   flex-shrink: 0;
+  margin-left: 4px;
 }
-.hootimp-opaction .button {
-  min-width: 120px;
-  text-align: center;
+.hootimp-opnote .dashicons {
+  font-size: 14px;
+  line-height: 1.3em;
+  width: 18px;
+  height: 1.3em;
+  vertical-align: bottom;
 }
-.hootimp-opaction .button.disabled {
-  color: #666 !important;
-}
-.hootimp-opaction .button.updating-message:before {
-  color: #a7a7a7;
+.hootimp-opnote > div {
+  display: none;
 }
 
-.hootimp-opaction_active {
+.hootimp-opnote--unavailable {
+  color: #f78d1b;
+}
+
+.hootimp-opnote--installed {
+  color: #f78d1b;
+}
+
+.hootimp-opnote--active {
   color: #00a32a;
 }
-.hootimp-opaction_active .dashicons {
+.hootimp-opnote--active .dashicons {
   font-size: 18px;
-  line-height: 1.4em;
-  width: 18px;
-  height: 18px;
-  vertical-align: text-bottom;
+  line-height: 1em;
+  height: 1em;
 }
 
 .hootimp-action {
@@ -298,6 +300,19 @@ input:checked + .hootimp-toggle:before {
   transform: translateX(13px);
 }
 
+.hootimp-opbox--plugin_reqd input + .hootimp-toggle,
+.hootimp-opbox--plugin_active .hootimp-toggle {
+  background-color: #2271b1;
+  opacity: 0.5;
+}
+.hootimp-opbox--plugin_reqd input + .hootimp-toggle:before,
+.hootimp-opbox--plugin_active .hootimp-toggle:before {
+  background-color: #c9ecfd;
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
 /*** Load Processing ***/
 .hootimp-loader,
 .hootimp-complete {
@@ -312,7 +327,8 @@ input:checked + .hootimp-toggle:before {
 
 .hootimp-loaderror {
   display: none;
-  margin: 1em 0 0;
+  margin: 1em -10px 0;
+  font-weight: 500;
 }
 
 .hootimp-form {

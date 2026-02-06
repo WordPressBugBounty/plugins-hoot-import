@@ -21,15 +21,14 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 		private static $instance;
 
 		/**
-		 * Demo Pack Manifest
+		 * Single Demo - Pack Manifest
 		 * @since  1.0
 		 * @access public
 		 */
 		public $demopack = array();
-		public $demopackversion = 'v1';
 
 		/**
-		 * Set demoslug identifier
+		 * Single Demo - slug identifier
 		 * @since  1.0
 		 * @access public
 		 */
@@ -83,7 +82,7 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 		 * @access public
 		 */
 		public function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
-			$actions['manage'] = '<a href="' . admin_url( 'themes.php?page=' . hootimport()->slug ) . '">' . esc_html__( 'Import Demo', 'hoot-import' ) . '</a>';
+			$actions['manage'] = '<a href="' . esc_url( admin_url( 'themes.php?page=' . hootimport()->slug ) ) . '">' . esc_html__( 'Import Demo', 'hoot-import' ) . '</a>';
 			return $actions;
 		}
 
@@ -200,7 +199,7 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 			if ( 'appearance_page_hoot-import' === $screen->id && ! get_option( 'hootimport_admin_footer' ) ) {
 				$footer_text =
 					/* Translators: The %s are placeholders for HTML, so the order can't be changed. */
-					sprintf( esc_html__( 'If you like Hoot Import plugin, please consider rating us a %1$s %3$s on WordPress.org%2$s to help us spread the word.', 'hoot-import' ), '<a class="hootimp-rateus" href="https://wordpress.org/support/plugin/hoot-import/reviews/?rate=5#new-post" rel="nofollow" targte="_blank" data-rated="' . esc_attr__( 'Thanks :)', 'hoot-import' ) . '">', '</a>', '&#9733;&#9733;&#9733;&#9733;&#9733;' );
+					sprintf( esc_html__( 'If you like Hoot Import plugin, please consider rating us a %1$s %3$s on WordPress.org%2$s to help us spread the word.', 'hoot-import' ), '<a class="hootimp-rateus" href="https://wordpress.org/support/plugin/hoot-import/reviews/?rate=5#new-post" rel="nofollow" target="_blank" data-rated="' . esc_attr__( 'Thanks :)', 'hoot-import' ) . '">', '</a>', '&#9733;&#9733;&#9733;&#9733;&#9733;' );
 			}
 			return $footer_text;
 		}
@@ -223,9 +222,8 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 		 * @access public
 		 * @return void
 		 */
-		public function woocommerce_disable_setup_wizard() {
-			$screen = get_current_screen();
-			if ( 'appearance_page_hoot-import' === $screen->id ) {
+		public function woocommerce_disable_setup_wizard( $screen ) {
+			if ( is_object( $screen ) && !empty( $screen->id ) && 'appearance_page_hoot-import' === $screen->id ) {
 				add_filter( 'woocommerce_enable_setup_wizard', '__return_false', 1 );
 			}
 		}
@@ -253,19 +251,16 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 				$this->demopack = array( 'error' => 'invalid_manifest' );
 			} else {
 				$demoslug = isset( $manifest[ $this->demoslug ] ) && is_array( $manifest[ $this->demoslug ] ) ? $this->demoslug : str_ireplace( '-premium', '', $this->demoslug );
-				if ( !isset( $manifest[ $demoslug ] ) || !is_array( $manifest[ $demoslug ] ) ) {
-					$this->demopack = array( 'error' => 'incompatible_theme' );
-				} else {
+				if ( !empty( $manifest[ $demoslug ] ) && is_array( $manifest[ $demoslug ] ) ) {
 					$this->demopack = array(
 						'pack' => trailingslashit( $manifest['cdn_url'] ) . $this->demoslug . '.zip',
-						'img' => trailingslashit( $manifest['cdn_url'] ) . 'imgs/' . $this->demoslug . '.jpg',
+						'img' => trailingslashit( $manifest['cdn_base'] ) . 'images/hootimport/' . ( !empty( $manifest[ $demoslug ]['img'] ) ? $manifest[ $demoslug ]['img'] : $demoslug . '.jpg' ),
 						'plugins' => !empty( $manifest[ $demoslug ]['plugins'] ) ? $manifest[ $demoslug ]['plugins'] : array(),
 					);
+				} else {
+					$this->demopack = array( 'error' => 'incompatible_theme' );
 				}
 			}
-			// Regular Maintenace tasks
-			$force_cleanup = isset( $_GET['refreshdemo'] ) && $_GET['refreshdemo'] === 'true' && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash ( $_GET['_wpnonce'] ) ), 'hootimport_refresh_demo_data_nonce' ) ? true : false;
-			hootimport_cleanup( hootimport()->demopack_dir, $force_cleanup );
 		}
 
 		/**
@@ -275,12 +270,21 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 		 * @return void
 		 */
 		public function render_admin(){
+			// Set demoslug and demopack
 			$demoslug = hootimport()->get_theme_config('id');
-			$this->demoslug = apply_filters( 'hootimport_manifest_demoslug', strtolower( $demoslug ) );
-			if ( !empty( $this->demoslug ) && is_string( $this->demoslug ) ) {
+			$this->demoslug = !empty( $demoslug ) && is_string( $demoslug ) ? strtolower( $demoslug ) : '';
+			if ( !empty( $this->demoslug ) ) {
 				$this->set_demopack();
 			}
+
+			// Set compatibility
 			$is_compatible = !empty( $this->demopack ) && is_array( $this->demopack ) && !empty( $this->demopack['pack'] );
+
+			// Regular Maintenance tasks
+			if ( $is_compatible ) {
+				$force_cleanup = isset( $_GET['refreshdemo'] ) && $_GET['refreshdemo'] === 'true' && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash ( $_GET['_wpnonce'] ) ), 'hootimport_refresh_demo_data_nonce' ) ? true : false;
+				hootimport_cleanup( hootimport()->demopack_dir, $force_cleanup );
+			}
 			?>
 			<div class="hootimp-wrap">
 
@@ -297,7 +301,10 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 
 					<?php if ( !$is_compatible ) : ?>
 						<div class="hootimp-content"><?php
-							if ( empty( $this->demopack )
+							$icnotice = hootimport()->get_theme_config('incompatible');
+							if ( !empty( $icnotice ) && is_string( $icnotice ) ) {
+								echo '<div class="notice notice-warning">' . wp_kses_post( wpautop( $icnotice ) ) . '</div>';
+							} elseif ( empty( $this->demopack )
 								|| !is_array( $this->demopack )
 								|| ( isset( $this->demopack['error'] ) && $this->demopack['error'] === 'incompatible_theme' )
 							) {
@@ -310,13 +317,13 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 									} else {
 										echo '<p>' . esc_html__( 'The current theme is not supported by Hoot Import plugin.', 'hoot-import' ) . '</p>';
 										/* Translators: The %s are placeholders for HTML, so the order can't be changed. */
-										printf( esc_html__( 'Please make sure you are using an official %1$swpHoot Theme%2$s', 'hoot-import' ), '<a href="https://wordpress.org/themes/author/wphoot/" rel="nofollow">', '</a>' );
+										echo '<p>' . sprintf( esc_html__( 'Please make sure you are using an official %1$swpHoot Theme%2$s', 'hoot-import' ), '<a href="https://wordpress.org/themes/author/wphoot/" rel="nofollow">', '</a>' ) . '</p>';
 									}
 								echo '</div>';
 							} else {
 								echo '<div class="notice notice-error">';
 									if ( isset( $this->demopack['error'] ) && $this->demopack['error'] === 'invalid_manifest' ) {
-										echo '<p>' . esc_html__( 'The theme demos manifest is not fomratted properly.', 'hoot-import' ) . '</p>';
+										echo '<p>' . esc_html__( 'The theme demos manifest is not formatted properly.', 'hoot-import' ) . '</p>';
 									} else {
 										echo '<p>' . esc_html__( 'An unknown error occurred.', 'hoot-import' ) . '</p>';
 									}
@@ -328,11 +335,8 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 							<div class="hootimp-screenshots">
 								<div class="hootimp-screenshot">
 									<?php
-									$imgurl = ( !empty( hootimport()->get_theme_config('theme_img') ) )
-												? hootimport()->get_theme_config('theme_img')
-												: ( !empty( $this->demopack['img'] ) ? $this->demopack['img'] : '' );
-									if ( !empty( $imgurl ) ) {
-										echo '<img src="' . esc_url( $imgurl ) . '" alt="' . esc_attr__( 'Import Demo', 'hoot-import' ) . '" />';
+									if ( !empty( $this->demopack['img'] ) ) {
+										echo '<img src="' . esc_url( $this->demopack['img'] ) . '" alt="' . esc_attr__( 'Import Demo', 'hoot-import' ) . '" />';
 									} ?>
 								</div>
 							</div>
@@ -346,7 +350,7 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 									} else {
 										$theme = wp_get_theme();
 										echo esc_html( $theme->get('Name') );
-										echo '<span>' . esc_html( $theme->get('Version') ) . '</span>';
+										echo ' <span>' . esc_html( $theme->get('Version') ) . '</span>';
 									}
 								?></h2>
 								<p><?php esc_html_e( 'Importing demo data makes your website look similar to the theme demo. Users often find it easier to start with the demo content and then edit it to fit their needs rather than starting from scratch.', 'hoot-import' ); ?></p>
@@ -354,26 +358,67 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 									<div class="hootimp-noloader">
 
 										<?php $plugin_ops = $this->get_plugins_info();
+
+										// Set plugin status
+										$activeplugins = array();
+										foreach ( $plugin_ops as $id => $option ) {
+											if ( is_array( $option ) && !empty( $option['data'] ) && is_array( $option['data'] ) ) {
+												if ( !empty( $option['data']['class'] ) && class_exists( $option['data']['class'] ) ) {
+													$activeplugins[ $id ] = $plugin_ops[ $id ];
+													$activeplugins[ $id ]['status'] = 'active';
+													unset( $plugin_ops[ $id ] );
+												} elseif ( !empty( $option['data']['const'] ) && defined( $option['data']['const'] ) ) {
+													$activeplugins[ $id ] = $plugin_ops[ $id ];
+													$activeplugins[ $id ]['status'] = 'active';
+													unset( $plugin_ops[ $id ] );
+												} elseif ( !empty( $option['data']['file'] ) && file_exists( WP_PLUGIN_DIR . "/{$option['data']['file']}" ) ) {
+													$plugin_ops[ $id ]['status'] = 'installed';
+												} else {
+													$plugin_ops[ $id ]['status'] = 'unavailable';
+												}
+											} else { // this shouldn't have happened
+												$plugin_ops[ $id ]['status'] = 'unavailable';
+											}
+										}
+
+										// Divide remaning non active into rcmd categories
+										$required = array_filter( $plugin_ops, function( $item ) {
+											return !empty( $item['rcmd'] ) && $item['rcmd'] === 'reqd';
+										} );
 										$recommended = array_filter( $plugin_ops, function( $item ) {
-											return !empty( $item['rcmd'] );
+											return !empty( $item['rcmd'] ) && $item['rcmd'] !== 'reqd';
 										} );
 										$optional = array_filter( $plugin_ops, function( $item ) {
 											return empty( $item['rcmd'] );
 										} );
-										if ( !empty( $plugin_ops ) && is_array( $plugin_ops ) ) : ?>
+										$show_subhead = !empty( $activeplugins ) || ( count(array_filter(array($required, $recommended, $optional))) >= 2 );
+
+										if ( ( !empty( $plugin_ops ) && is_array( $plugin_ops ) ) || ( !empty( $activeplugins ) && is_array( $activeplugins) ) ) : ?>
 											<div class="hootimp-op-group">
 												<h4><?php esc_html_e( 'Plugins:', 'hoot-import' ); ?></h4>
-												<div class="hootimp-h4desc"><?php esc_html_e( 'These plugins help to make your site look like the demo site.', 'hoot-import' ); ?></div>
+												<div class="hootimp-h4desc"><?php esc_html_e( 'These plugins have been used on the demo site and are required to replicate the demo content.', 'hoot-import' ); ?></div>
+												<?php if ( !empty( $activeplugins ) ) : ?>
+													<?php if ( $show_subhead ) : ?><h5><span><?php esc_html_e( 'Active Plugins:', 'hoot-import' ); ?></span></h5><?php endif; ?>
+													<?php foreach ( $activeplugins as $id => $plugin ) {
+														$this->render_option( 'plugin', $id, $plugin );
+													} ?>
+												<?php endif; ?>
+												<?php if ( !empty( $required ) ) : ?>
+													<?php if ( $show_subhead ) : ?><h5><span><?php esc_html_e( 'Required Plugins:', 'hoot-import' ); ?></span></h5><?php endif; ?>
+													<?php foreach ( $required as $id => $plugin ) {
+														$this->render_option( 'plugin', $id, $plugin );
+													} ?>
+												<?php endif; ?>
 												<?php if ( !empty( $recommended ) ) : ?>
-													<h5><span><?php esc_html_e( 'Highly Recommended', 'hoot-import' ); ?></span></h5>
+													<?php if ( $show_subhead ) : ?><h5><span><?php esc_html_e( 'Highly Recommended', 'hoot-import' ); ?></span></h5><?php endif; ?>
 													<?php foreach ( $recommended as $id => $plugin ) {
-														$this->render_pluginoption( 'plugin', $id, $plugin );
+														$this->render_option( 'plugin', $id, $plugin );
 													} ?>
 												<?php endif; ?>
 												<?php if ( !empty( $optional ) ) : ?>
-													<h5><span><?php esc_html_e( 'Optional', 'hoot-import' ); ?></span></h5>
+													<?php if ( $show_subhead ) : ?><h5><span><?php esc_html_e( 'Optional', 'hoot-import' ); ?></span></h5><?php endif; ?>
 													<?php foreach ( $optional as $id => $plugin ) {
-														$this->render_pluginoption( 'plugin', $id, $plugin );
+														$this->render_option( 'plugin', $id, $plugin );
 													} ?>
 												<?php endif; ?>
 											</div>
@@ -393,6 +438,7 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 												) );
 												$this->render_option( 'content', 'dat', array(
 													'name' => esc_html__( 'Customizer DAT', 'hoot-import' ),
+													'desc' => esc_html__( 'Customizer Settings', 'hoot-import' ),
 												) );
 												$this->render_option( 'content', 'wie', array(
 													'name' => esc_html__( 'Widgets WIE', 'hoot-import' ),
@@ -447,19 +493,17 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 								</form>
 							</div>
 						</div>
-					<?php endif; ?>
-					<div class="hootimp-footer">
-						<p><span class="dashicons dashicons-update"></span> <a href="<?php
-							$current_url = !empty( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-							if ( strpos( $current_url, '_wpnonce' ) === false ) {
-								$url = add_query_arg( 'refreshdemo', 'true', $current_url );
-								echo esc_url( wp_nonce_url( $url, 'hootimport_refresh_demo_data_nonce' ) );
-							} else {
+						<div class="hootimp-footer">
+							<p><span class="dashicons dashicons-update"></span> <a href="<?php
+								$current_url = !empty( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+								if ( strpos( $current_url, '_wpnonce' ) === false ) {
+									$current_url = add_query_arg( 'refreshdemo', 'true', $current_url );
+									$current_url = wp_nonce_url( $current_url, 'hootimport_refresh_demo_data_nonce' );
+								}
 								echo esc_url( $current_url );
-							}
-						?>"><?php esc_html_e( 'Refetch Demo Data Files', 'hoot-import' ); ?></a></p>
-					</div><!-- .hootimp-footer -->
-
+							?>"><?php esc_html_e( 'Refetch Demo Data Files', 'hoot-import' ); ?></a></p>
+						</div><!-- .hootimp-footer -->
+					<?php endif; ?>
 				</div><!-- .hootimp-body -->
 
 			</div><!-- .hootimp-wrap -->
@@ -475,78 +519,79 @@ if ( ! class_exists( '\HootImport\Inc\Admin' ) ) :
 		 */
 		public function render_option( $type, $id, $option ){
 			if ( is_array( $option ) ) :
-				$opname = !empty( $option['name'] ) ? $option['name'] : '';
-				$opdesc = !empty( $option['desc'] ) ? $option['desc'] : '';
-				$checked = isset( $option['checked'] ) ? !empty( $option['checked'] ) : true;
-				?>
-				<div class="hootimp-opbox hootimp-opbox--content hootimp-opbox--<?php echo sanitize_html_class( $id ) ?>">
-					<div class="hootimp-op">
-						<input type="checkbox" name="<?php echo esc_attr( $type ) ?>[]" value="<?php echo esc_attr( $id ) ?>" data-name="<?php echo esc_attr( $opname ) ?>" <?php if ( $checked ) echo ' checked="checked"'; ?> />
-						<span class="hootimp-toggle"></span>
-					</div>
-					<div class="hootimp-oplabel">
-						<strong><?php echo esc_html( $opname ) ?></strong>
-						<?php if ( $opdesc ) echo '<em>(' . esc_html( $opdesc ) . ')</em>' ?>
-					</div>
-				</div>
-			<?php endif;
-		}
+				$isplugin = $type === 'plugin' ? true : false;
 
-		/**
-		 * Render Option
-		 * @since  1.0
-		 * @access public
-		 * @return void
-		 */
-		public function render_pluginoption( $type, $id, $option ){
-			if ( is_array( $option ) ) :
 				$opname = !empty( $option['name'] ) ? $option['name'] : $id;
 				$opdesc = !empty( $option['desc'] ) ? $option['desc'] : '';
-				$opdata = !empty( $option['data'] ) && is_array( $option['data'] ) ? $option['data'] : array();
+				$checked = isset( $option['checked'] ) ? !empty( $option['checked'] ) : true;
+				$opboxclasses = '';
+				// Plugin Stuff
+				$opreqd = false;
+				$opdata = array();
+				$pluginstatus = '';
 
-				$pluginstatus = 'unavailable';
-				if ( $type === 'plugin' && !empty( $option['data'] ) && is_array( $option['data'] ) ) {
-					if ( !empty( $option['data']['class'] ) && class_exists( $option['data']['class'] ) )
-						$pluginstatus = 'active';
-					elseif ( !empty( $option['data']['const'] ) && defined( $option['data']['const'] ) )
-						$pluginstatus = 'active';
-					elseif ( !empty( $option['data']['file'] ) && file_exists( WP_PLUGIN_DIR . "/{$option['data']['file']}" ) )
-						$pluginstatus = 'installed';
+				if ( ! $isplugin ) {
+					$opboxclasses = 'hootimp-opbox hootimp-opbox--content hootimp-opbox--' . $id;
+				} else {
+					$pluginstatus = !empty( $option['status'] ) && is_string( $option['status'] ) ? $option['status'] : 'unavailable';
+					$opreqd = !empty( $option['rcmd'] ) && $option['rcmd'] === 'reqd';
+					$opdata = !empty( $option['data'] ) && is_array( $option['data'] ) ? $option['data'] : array();
+					if ( $pluginstatus === 'active' || $opreqd ) {
+						$checked = true;
+					}
+					$opboxclasses = 'hootimp-opbox hootimp-opbox--plugin hootimp-opbox--plugin_' . $pluginstatus;
+					if ( $opreqd )
+						$opboxclasses .= ' hootimp-opbox--plugin_reqd';
+					if ( ! $checked )
+						$opboxclasses .= ' hootimp-opbox--plugin_noaction';
 				}
 				?>
-				<div class="hootimp-opbox hootimp-opbox--plugin <?php echo sanitize_html_class("hootimp-opbox--plugin_{$pluginstatus}"); ?>">
+				<div class="<?php echo hootimport_sanitize_html_classes( $opboxclasses ) ?>">
+
+					<div class="hootimp-optoggle">
+						<?php if ( $isplugin && $pluginstatus === 'active' ) : // active plugins
+							?><span class="dashicons dashicons-yes"></span>
+						<?php else : // inactive/not-installed plugin OR Not a plugin ?>
+							<input type="checkbox"<?php
+								echo ' name="' . esc_attr( $type ) . '[]"';
+								echo ' value="' . esc_attr( $id ) . '"';
+								echo ' data-name="' . esc_attr( $opname ) . '"';
+								if ( $checked ) echo ' checked="checked"';
+								if ( $isplugin ) {
+									foreach ( $opdata as $datakey => $dataval ) {
+										echo ' data-' . sanitize_key( $datakey ) . '="' . esc_attr( $dataval ) . '"';
+									}
+								}
+							?> />
+							<span class="hootimp-toggle"></span>
+						<?php endif; ?>
+					</div>
+
 					<div class="hootimp-oplabel">
 						<strong><?php echo esc_html( $opname ) ?></strong>
-						<?php if ( $opdesc ) echo '<em>(' . esc_html( $opdesc ) . ')</em>' ?>
-						<br />
-						<em><a href="<?php echo esc_url( 'https://wordpress.org/plugins/' . $id . '/' ); ?>" target="_blank"><?php esc_html_e( 'View details on wordpress.org', 'hoot-import' ); ?></a></em>
+						<?php if ( $opdesc ) {
+							echo '<em>(' . esc_html( $opdesc ) . ')</em>';
+						} elseif ( $isplugin ) {
+							echo '<em><a href="' . esc_url( 'https://wordpress.org/plugins/' . $id . '/' ) . '" target="_blank">' . esc_html( 'View details', 'hoot-import' ) . '</a></em>';
+						} ?>
 					</div>
-					<div class="hootimp-opaction">
-						<div class="hootimp-opaction_error notice notice-error"><?php
-							esc_html_e( 'There was an error.', 'hoot-import' );
-						?></div>
-						<div class="hootimp-opaction_installed"><?php
-							echo '<a href="#" class="button button-primary"';
-								echo ' data-type="' . esc_attr( $type ) . '"';
-								echo ' data-value="' . esc_attr( $id ) . '"';
-								foreach ( $opdata as $datakey => $dataval ) {
-									echo ' data-' . sanitize_key( $datakey ) . '="' . esc_attr( $dataval ) . '"';
-								}
-								echo '>' . esc_html__( 'Activate', 'hoot-import' ) . '</a>';
-						?></div>
-						<div class="hootimp-opaction_active"><span class="dashicons dashicons-yes"></span><?php
-							esc_html_e( 'Installed & Active', 'hoot-import' );
-						?></div>
-						<div class="hootimp-opaction_unavailable"><?php
-							echo '<a href="#" class="button button-primary"';
-								echo ' data-type="' . esc_attr( $type ) . '"';
-								echo ' data-value="' . esc_attr( $id ) . '"';
-								foreach ( $opdata as $datakey => $dataval ) {
-									echo ' data-' . sanitize_key( $datakey ) . '="' . esc_attr( $dataval ) . '"';
-								}
-								echo '>' . esc_html__( 'Install & Activate', 'hoot-import' ) . '</a>';
-						?></div>
-					</div>
+
+					<?php if ( $isplugin ) : ?>
+						<div class="hootimp-opnote">
+							<div class="hootimp-opnote--active"><span class="dashicons dashicons-yes"></span><?php
+								esc_html_e( 'Active', 'hoot-import' );
+							?></div>
+							<div class="hootimp-opnote--installed"><span class="dashicons dashicons-marker"></span><?php
+								esc_html_e( 'Activate', 'hoot-import' );
+								if ( $opreqd ) echo ' <strong>' . esc_html__( '(Required)', 'hoot-import' ) . '</strong>';
+							?></div>
+							<div class="hootimp-opnote--unavailable"><span class="dashicons dashicons-plus"></span><?php
+								esc_html_e( 'Install', 'hoot-import' );
+								if ( $opreqd ) echo ' <strong>' . esc_html__( '(Required)', 'hoot-import' ) . '</strong>';
+							?></div>
+						</div>
+					<?php endif; ?>
+
 				</div>
 			<?php endif;
 		}
